@@ -1,3 +1,5 @@
+.. image:: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper.svg?branch=master
+    :target: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper
 ################################################################################
 StanfordNLP wrapper for NAF files
 ################################################################################
