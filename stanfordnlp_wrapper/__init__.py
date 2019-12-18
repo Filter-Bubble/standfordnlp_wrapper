@@ -3,7 +3,7 @@
 import logging
 
 from .__version__ import __version__
-from .stanfordnlp_wrapper import parse
+from .stanfordnlp_wrapper import parse, get_naf
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
