@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NAF xml:lang="nl" version="v3">
+  <nafHeader>
+    <fileDesc creationtime="2020-01-10T16:07:39+0100" />
+    <public uri="http://www.newsreader-project.eu/example-news.html" />
+    <linguisticProcessors layer="raw">
+      <lp name="vua-naf2text" timestamp="2020-01-10T16:07:39+0100" beginTimestamp="2020-01-10T16:07:39+0100" endTimestamp="2020-01-10T16:07:39+0100" version="1.0" hostname="dafne-VirtualBox" />
+    </linguisticProcessors>
+    <linguisticProcessors layer="text">
+      <lp name="ixa-pipe-tok-nl" beginTimestamp="2020-01-10T16:07:41+0100" endTimestamp="2020-01-10T16:07:41+0100" version="1.8.5-22046489b892163a5d42a388d09019c481f2ca58" hostname="dafne-VirtualBox" />
+    </linguisticProcessors>
+  </nafHeader>
+  <raw><![CDATA[Het kabinet wil het afsteken van vuurwerk voor consumenten verder aan banden leggen, zo hebben premier Mark Rutte en justitieminister Ferd Grapperhaus vrijdagmiddag na de ministerraad gezegd. "Ik vind het verschrikkelijk en schandalig hoe sommige mensen zich gedragen hebben tegenover hulpverleners, zo zegt Rutte tijdens de persconferentie na de ministerraad over de incidenten tijdens de jaarwisseling.]]></raw>
+  <text>
+    <wf id="w1" offset="0" length="3" sent="1" para="1">Het</wf>
+    <wf id="w2" offset="4" length="7" sent="1" para="1">kabinet</wf>
+    <wf id="w3" offset="12" length="3" sent="1" para="1">wil</wf>
+    <wf id="w4" offset="16" length="3" sent="1" para="1">het</wf>
+    <wf id="w5" offset="20" length="8" sent="1" para="1">afsteken</wf>
+    <wf id="w6" offset="29" length="3" sent="1" para="1">van</wf>
+    <wf id="w7" offset="33" length="8" sent="1" para="1">vuurwerk</wf>
+    <wf id="w8" offset="42" length="4" sent="1" para="1">voor</wf>
+    <wf id="w9" offset="47" length="11" sent="1" para="1">consumenten</wf>
+    <wf id="w10" offset="59" length="6" sent="1" para="1">verder</wf>
+    <wf id="w11" offset="66" length="3" sent="1" para="1">aan</wf>
+    <wf id="w12" offset="70" length="6" sent="1" para="1">banden</wf>
+    <wf id="w13" offset="77" length="6" sent="1" para="1">leggen</wf>
+    <wf id="w14" offset="83" length="1" sent="1" para="1">,</wf>
+    <wf id="w15" offset="85" length="2" sent="1" para="1">zo</wf>
+    <wf id="w16" offset="88" length="6" sent="1" para="1">hebben</wf>
+    <wf id="w17" offset="95" length="7" sent="1" para="1">premier</wf>
+    <wf id="w18" offset="103" length="4" sent="1" para="1">Mark</wf>
+    <wf id="w19" offset="108" length="5" sent="1" para="1">Rutte</wf>
+    <wf id="w20" offset="114" length="2" sent="1" para="1">en</wf>
+    <wf id="w21" offset="117" length="16" sent="1" para="1">justitieminister</wf>
+    <wf id="w22" offset="134" length="4" sent="1" para="1">Ferd</wf>
+    <wf id="w23" offset="139" length="11" sent="1" para="1">Grapperhaus</wf>
+    <wf id="w24" offset="151" length="13" sent="1" para="1">vrijdagmiddag</wf>
+    <wf id="w25" offset="165" length="2" sent="1" para="1">na</wf>
+    <wf id="w26" offset="168" length="2" sent="1" para="1">de</wf>
+    <wf id="w27" offset="171" length="12" sent="1" para="1">ministerraad</wf>
+    <wf id="w28" offset="184" length="6" sent="1" para="1">gezegd</wf>
+    <wf id="w29" offset="190" length="1" sent="1" para="1">.</wf>
+    <wf id="w30" offset="192" length="1" sent="2" para="1">"</wf>
+    <wf id="w31" offset="193" length="2" sent="2" para="1">Ik</wf>
+    <wf id="w32" offset="196" length="4" sent="2" para="1">vind</wf>
+    <wf id="w33" offset="201" length="3" sent="2" para="1">het</wf>
+    <wf id="w34" offset="205" length="15" sent="2" para="1">verschrikkelijk</wf>
+    <wf id="w35" offset="221" length="2" sent="2" para="1">en</wf>
+    <wf id="w36" offset="224" length="10" sent="2" para="1">schandalig</wf>
+    <wf id="w37" offset="235" length="3" sent="2" para="1">hoe</wf>
+    <wf id="w38" offset="239" length="7" sent="2" para="1">sommige</wf>
+    <wf id="w39" offset="247" length="6" sent="2" para="1">mensen</wf>
+    <wf id="w40" offset="254" length="4" sent="2" para="1">zich</wf>
+    <wf id="w41" offset="259" length="8" sent="2" para="1">gedragen</wf>
+    <wf id="w42" offset="268" length="6" sent="2" para="1">hebben</wf>
+    <wf id="w43" offset="275" length="9" sent="2" para="1">tegenover</wf>
+    <wf id="w44" offset="285" length="13" sent="2" para="1">hulpverleners</wf>
+    <wf id="w45" offset="298" length="1" sent="2" para="1">,</wf>
+    <wf id="w46" offset="300" length="2" sent="2" para="1">zo</wf>
+    <wf id="w47" offset="303" length="4" sent="2" para="1">zegt</wf>
+    <wf id="w48" offset="308" length="5" sent="2" para="1">Rutte</wf>
+    <wf id="w49" offset="314" length="7" sent="2" para="1">tijdens</wf>
+    <wf id="w50" offset="322" length="2" sent="2" para="1">de</wf>
+    <wf id="w51" offset="325" length="15" sent="2" para="1">persconferentie</wf>
+    <wf id="w52" offset="341" length="2" sent="2" para="1">na</wf>
+    <wf id="w53" offset="344" length="2" sent="2" para="1">de</wf>
+    <wf id="w54" offset="347" length="12" sent="2" para="1">ministerraad</wf>
+    <wf id="w55" offset="360" length="4" sent="2" para="1">over</wf>
+    <wf id="w56" offset="365" length="2" sent="2" para="1">de</wf>
+    <wf id="w57" offset="368" length="10" sent="2" para="1">incidenten</wf>
+    <wf id="w58" offset="379" length="7" sent="2" para="1">tijdens</wf>
+    <wf id="w59" offset="387" length="2" sent="2" para="1">de</wf>
+    <wf id="w60" offset="390" length="13" sent="2" para="1">jaarwisseling</wf>
+    <wf id="w61" offset="403" length="1" sent="2" para="1">.</wf>
+  </text>
+</NAF>

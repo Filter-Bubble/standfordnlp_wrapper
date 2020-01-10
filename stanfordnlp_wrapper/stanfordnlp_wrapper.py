@@ -7,6 +7,8 @@ from KafNafParserPy import KafNafParser
 from lxml.etree import XMLSyntaxError
 from io import BytesIO
 import sys
+from itertools import groupby
+from operator import itemgetter
 
 logger = logging.getLogger(__name__)
 
@@ -88,22 +90,8 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
 
             tcount += 1
 
-def recover_raw_text(knaf_obj):
-    text = ''
-    for t in knaf_obj.get_tokens():
-        offset = t.get_offset()
-        if offset is None:
-            offset = len(text) + 1
-        else:
-            offset = int(offset)
-        if  offset > len(text):
-            text = text + ' '*(offset - len(text))
-        text = text + t.get_text()
 
-    return text
-
-# TODO add functionality
-def parse(input_file, max_min_per_sent=None):
+def parse(input_file):
     if isinstance(input_file, KafNafParser):
         in_obj = input_file
     else:
@@ -115,15 +103,24 @@ def parse(input_file, max_min_per_sent=None):
                         .format(lang))
         sys.exit(-1)
 
-    nlp = stanfordnlp.Pipeline(lang='nl')
-    text = in_obj.get_raw()
-    if text is None:
-        # TODO: throw warning? and add raw layer?
-        text = recover_raw_text(in_obj)
-    doc = nlp(text)
+    if in_obj.text_layer is None:
+        nlp = stanfordnlp.Pipeline(lang='nl')
+        text = in_obj.get_raw()
+        in_obj.remove_text_layer()
+        doc = nlp(text)
+        id_to_tokenid = create_text_layer(doc, in_obj)
+    else:
+        # Use existing tokenization
+        nlp = stanfordnlp.Pipeline(lang='nl', tokenize_pretokenized=True)
+        sent_tokens_ixa = [(token.get_sent(), token.get_text())
+                            for token in in_obj.get_tokens()]
+        text = [[t for s2, t in toks]
+                for s, toks in groupby(sent_tokens_ixa, itemgetter(0))]
+        #TODO: is this correct??? can we make it more elegant?
+        id_to_tokenid = {int(k): {str(i+1): t.get_id() for i,t in enumerate(g)}
+                        for k, g in groupby(in_obj.get_tokens(), lambda t: t.get_sent())}
+        doc = nlp(text)
 
-    in_obj.remove_text_layer()
-    id_to_tokenid = create_text_layer(doc, in_obj)
     create_term_layer(doc, in_obj, id_to_tokenid)
 
     return in_obj
