@@ -32,6 +32,7 @@ def get_naf(input_file):
         naf.set_raw(naf.raw)
     return naf
 
+
 def create_text_layer(st_doc, knaf_obj):
     id_to_tokenid = {}
     wcount = 1
@@ -44,22 +45,23 @@ def create_text_layer(st_doc, knaf_obj):
             token_length = len(token.text)
             token_obj.set_id(token_id)
             token_obj.set_length(str(token_length))
-            #token_obj.set_offset(str(offset)) # Is this correct????
+            # token_obj.set_offset(str(offset)) # Is this correct????
             token_obj.set_para('1')
             token_obj.set_sent(str(sid+1))
             token_obj.set_text(token.text)
             wcount += 1
-            offset += token_length # TODO fix
+            offset += token_length  # TODO fix
             id_to_tokenid[sid+1][token.index] = token_id
             knaf_obj.add_wf(token_obj)
     return id_to_tokenid
 
 
 def get_term_type(pos):
-    if pos in ['det','pron','prep','vg','conj' ]:
+    if pos in ['det', 'pron', 'prep', 'vg', 'conj']:
         return 'close'
     else:
         return 'open'
+
 
 def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
     tcount = 0
@@ -71,7 +73,8 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
             term_obj.set_id(new_term_id)
 
             new_span = KafNafParserPy.Cspan()
-            new_span.create_from_ids([id_to_tokenid[sid+1][term.parent_token.index]])
+            new_span.create_from_ids([id_to_tokenid[sid+1]
+                                      [term.parent_token.index]])
             term_obj.set_span(new_span)
 
             term_obj.set_lemma(term.lemma)
@@ -80,7 +83,7 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
             pos = term.upos.lower()
             term_obj.set_pos(pos)
 
-            feats = term.pos.split('|') #term.feats)
+            feats = term.pos.split('|')  # term.feats)
             feats = feats[0]+'(' + ','.join(feats[1:]) + ')'
             term_obj.set_morphofeat(feats)
 
@@ -113,12 +116,14 @@ def parse(input_file):
         # Use existing tokenization
         nlp = stanfordnlp.Pipeline(lang='nl', tokenize_pretokenized=True)
         sent_tokens_ixa = [(token.get_sent(), token.get_text())
-                            for token in in_obj.get_tokens()]
+                           for token in in_obj.get_tokens()]
         text = [[t for s2, t in toks]
                 for s, toks in groupby(sent_tokens_ixa, itemgetter(0))]
-        #TODO: is this correct??? can we make it more elegant?
-        id_to_tokenid = {int(k): {str(i+1): t.get_id() for i,t in enumerate(g)}
-                        for k, g in groupby(in_obj.get_tokens(), lambda t: t.get_sent())}
+        # TODO: is this correct??? can we make it more elegant?
+        id_to_tokenid = {int(k):
+                         {str(i+1): t.get_id() for i, t in enumerate(g)}
+                         for k, g in
+                         groupby(in_obj.get_tokens(), lambda t: t.get_sent())}
         doc = nlp(text)
 
     create_term_layer(doc, in_obj, id_to_tokenid)
