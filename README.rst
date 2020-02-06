@@ -4,10 +4,8 @@
 StanfordNLP wrapper for NAF files
 ################################################################################
 
+This is a wrapper around `StanfordNLP <https://stanfordnlp.github.io/stanfordnlp/index.html>`_ that produces `NAF files <http://wordpress.let.vupr.nl/naf/>`_ with morphosyntactic information. It is designed to use as a component in the `NewsReader pipeline <https://vu-rm-pip3.readthedocs.io/en/latest/home.html>`__. Ït currently only works for Dutch.
 
-
-
-The project setup is documented in `a separate document <project_setup.rst>`_. Feel free to remove this document (and/or the link to this document) if you don't need it.
 
 Installation
 ------------
@@ -28,12 +26,7 @@ Run tests (including coverage) with:
   python setup.py test
 
 
-Documentation
-*************
 
-.. _README:
-
-Include a link to your project's full documentation here.
 
 Contributing
 ************
