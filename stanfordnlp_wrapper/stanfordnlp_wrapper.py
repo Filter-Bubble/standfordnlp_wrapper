@@ -9,6 +9,7 @@ from io import BytesIO
 import sys
 from itertools import groupby
 from operator import itemgetter
+from xml.sax.saxutils import escape
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +66,11 @@ def get_term_type(pos):
 
 def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
     tcount = 0
+    term_id_mapping = {}  # Mapping from stanford word index -> NAF term id
     for sid, sentence in enumerate(st_doc.sentences):
         for term in sentence.words:
             new_term_id = 't_'+str(tcount)
-
+            term_id_mapping[(sid,term.index)] = new_term_id
             term_obj = KafNafParserPy.Cterm(type=knaf_obj.get_type())
             term_obj.set_id(new_term_id)
 
@@ -92,6 +94,21 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
             knaf_obj.add_term(term_obj)
 
             tcount += 1
+    return term_id_mapping
+
+def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
+    for s_id, sent in enumerate(st_doc.sentences):
+        for source, rel, target in sent.dependencies:
+            ##Creating comment
+            str_comment = ' '+rel+'('+str(target.lemma)+','+str(source.lemma)+') '
+            str_comment = escape(str_comment, {"--":"&ndash"})
+
+            my_dep = KafNafParserPy.Cdependency()
+            my_dep.set_from(term_id_mapping.get((s_id, source.index), 't_x'))
+            my_dep.set_to(term_id_mapping.get((s_id, target.index), 't_x'))
+            my_dep.set_function(rel)
+            my_dep.set_comment(str_comment)
+            knaf_obj.add_dependency(my_dep)
 
 
 def parse(input_file):
@@ -125,7 +142,13 @@ def parse(input_file):
                          for k, g in
                          groupby(in_obj.get_tokens(), lambda t: t.get_sent())}
         doc = nlp(text)
+        # Check that we don't get mutli-word get_tokens
+        if any([len(sent.tokens) != len(sent.words)
+                for sent in doc.sentences]):
+            raise Exception('StanfordNLP returns MutliWordTokens. '
+                            'This is not allowed for Dutch.')
 
-    create_term_layer(doc, in_obj, id_to_tokenid)
+    term_id_mapping = create_term_layer(doc, in_obj, id_to_tokenid)
+    create_dependency_layer(doc, in_obj, term_id_mapping)
 
     return in_obj
