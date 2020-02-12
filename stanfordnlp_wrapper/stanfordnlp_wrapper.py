@@ -70,7 +70,7 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
     for sid, sentence in enumerate(st_doc.sentences):
         for term in sentence.words:
             new_term_id = 't_'+str(tcount)
-            term_id_mapping[(sid,term.index)] = new_term_id
+            term_id_mapping[(sid, term.index)] = new_term_id
             term_obj = KafNafParserPy.Cterm(type=knaf_obj.get_type())
             term_obj.set_id(new_term_id)
 
@@ -81,7 +81,6 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
 
             term_obj.set_lemma(term.lemma)
 
-            # TODO map pos tags to universal tag?
             pos = term.upos.lower()
             term_obj.set_pos(pos)
 
@@ -96,19 +95,22 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
             tcount += 1
     return term_id_mapping
 
+
 def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
     for s_id, sent in enumerate(st_doc.sentences):
         for source, rel, target in sent.dependencies:
-            ##Creating comment
-            str_comment = ' '+rel+'('+str(target.lemma)+','+str(source.lemma)+') '
-            str_comment = escape(str_comment, {"--":"&ndash"})
+            # Do not include root
+            if rel != 'root':
+                # Creating comment
+                str_comment = ' '+rel+'('+str(target.lemma)+','+str(source.lemma)+') '
+                str_comment = escape(str_comment, {"--":"&ndash"})
 
-            my_dep = KafNafParserPy.Cdependency()
-            my_dep.set_from(term_id_mapping.get((s_id, source.index), 't_x'))
-            my_dep.set_to(term_id_mapping.get((s_id, target.index), 't_x'))
-            my_dep.set_function(rel)
-            my_dep.set_comment(str_comment)
-            knaf_obj.add_dependency(my_dep)
+                my_dep = KafNafParserPy.Cdependency()
+                my_dep.set_from(term_id_mapping.get((s_id, source.index)))
+                my_dep.set_to(term_id_mapping.get((s_id, target.index)))
+                my_dep.set_function(rel)
+                my_dep.set_comment(str_comment)
+                knaf_obj.add_dependency(my_dep)
 
 
 def parse(input_file):
@@ -124,14 +126,17 @@ def parse(input_file):
         sys.exit(-1)
 
     if in_obj.text_layer is None:
-        nlp = stanfordnlp.Pipeline(lang='nl')
+        nlp = stanfordnlp.Pipeline(lang='nl',
+                                   processors='tokenize,pos,lemma,depparse')
         text = in_obj.get_raw()
         in_obj.remove_text_layer()
         doc = nlp(text)
         id_to_tokenid = create_text_layer(doc, in_obj)
     else:
         # Use existing tokenization
-        nlp = stanfordnlp.Pipeline(lang='nl', tokenize_pretokenized=True)
+        nlp = stanfordnlp.Pipeline(lang='nl',
+                                   tokenize_pretokenized=True,
+                                   processors='tokenize,pos,lemma,depparse')
         sent_tokens_ixa = [(token.get_sent(), token.get_text())
                            for token in in_obj.get_tokens()]
         text = [[t for s2, t in toks]
