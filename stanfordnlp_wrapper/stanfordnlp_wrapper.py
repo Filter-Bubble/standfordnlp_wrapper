@@ -14,7 +14,7 @@ from xml.sax.saxutils import escape
 
 logger = logging.getLogger(__name__)
 this_name = 'Morphosyntactic parser based on StanfordNLP'
-
+default_treebank = 'nl_alpino'
 
 def get_naf(input_file):
 
@@ -118,22 +118,25 @@ def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
                 knaf_obj.add_dependency(my_dep)
 
 
-def add_linguistic_processors(in_obj, added_text_layer):
+def add_linguistic_processors(in_obj, added_text_layer, treebank):
+    treebank = treebank if treebank is not None else default_treebank
+    name = this_name + ' using {} treebank'.format(treebank)
+
     if added_text_layer:
         my_lp = KafNafParserPy.Clp()
-        my_lp.set_name(this_name)
+        my_lp.set_name(name)
         my_lp.set_version(__version__)
         my_lp.set_timestamp()
         in_obj.add_linguistic_processor('text', my_lp)
 
     my_lp = KafNafParserPy.Clp()
-    my_lp.set_name(this_name)
+    my_lp.set_name(name)
     my_lp.set_version(__version__)
     my_lp.set_timestamp()
     in_obj.add_linguistic_processor('terms', my_lp)
 
     my_lp = KafNafParserPy.Clp()
-    my_lp.set_name(this_name)
+    my_lp.set_name(name)
     my_lp.set_version(__version__)
     my_lp.set_timestamp()
     in_obj.add_linguistic_processor('deps', my_lp)
@@ -141,7 +144,7 @@ def add_linguistic_processors(in_obj, added_text_layer):
     return in_obj
 
 
-def parse(input_file):
+def parse(input_file, treebank=None):
     if isinstance(input_file, KafNafParser):
         in_obj = input_file
     else:
@@ -156,7 +159,8 @@ def parse(input_file):
     if in_obj.text_layer is None:
         added_text_layer = True
         nlp = stanfordnlp.Pipeline(lang='nl',
-                                   processors='tokenize,pos,lemma,depparse')
+                                   processors='tokenize,pos,lemma,depparse',
+                                   treebank=treebank)
         text = in_obj.get_raw()
         in_obj.remove_text_layer()
         doc = nlp(text)
@@ -166,7 +170,8 @@ def parse(input_file):
         added_text_layer = False
         nlp = stanfordnlp.Pipeline(lang='nl',
                                    tokenize_pretokenized=True,
-                                   processors='tokenize,pos,lemma,depparse')
+                                   processors='tokenize,pos,lemma,depparse',
+                                   treebank=treebank)
         sent_tokens_ixa = [(token.get_sent(), token.get_text())
                            for token in in_obj.get_tokens()]
         text = [[t for s2, t in toks]
@@ -186,5 +191,5 @@ def parse(input_file):
     term_id_mapping = create_term_layer(doc, in_obj, id_to_tokenid)
     create_dependency_layer(doc, in_obj, term_id_mapping)
 
-    in_obj = add_linguistic_processors(in_obj, added_text_layer)
+    in_obj = add_linguistic_processors(in_obj, added_text_layer, treebank)
     return in_obj
