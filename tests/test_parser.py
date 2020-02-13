@@ -1,8 +1,4 @@
-from KafNafParserPy import KafNafParser
 import os
-import sys
-import subprocess
-from io import BytesIO
 
 from stanfordnlp_wrapper import parse
 

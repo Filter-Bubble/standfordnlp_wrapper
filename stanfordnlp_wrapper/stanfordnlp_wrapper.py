@@ -39,21 +39,24 @@ def get_naf(input_file):
 def create_text_layer(st_doc, knaf_obj):
     id_to_tokenid = {}
     wcount = 1
-    offset = 0
+    offsets = {}
+    txt = knaf_obj.get_raw()
     for sid, sentence in enumerate(st_doc.sentences):
         id_to_tokenid[sid+1] = {}
         for token in sentence.tokens:
             token_obj = KafNafParserPy.Cwf(type=knaf_obj.get_type())
             token_id = 'w{}'.format(wcount)
             token_length = len(token.text)
+            offsets[wcount] = txt.find(token.text, offsets.get(wcount-1, 0))
             token_obj.set_id(token_id)
             token_obj.set_length(str(token_length))
             # token_obj.set_offset(str(offset)) # Is this correct????
             token_obj.set_para('1')
             token_obj.set_sent(str(sid+1))
             token_obj.set_text(token.text)
+            token_obj.set_offset(str(offsets[wcount]))
+
             wcount += 1
-            offset += token_length  # TODO fix
             id_to_tokenid[sid+1][token.index] = token_id
             knaf_obj.add_wf(token_obj)
     return id_to_tokenid
@@ -115,7 +118,14 @@ def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
                 knaf_obj.add_dependency(my_dep)
 
 
-def add_linguistic_processors(in_obj):
+def add_linguistic_processors(in_obj, added_text_layer):
+    if added_text_layer:
+        my_lp = KafNafParserPy.Clp()
+        my_lp.set_name(this_name)
+        my_lp.set_version(__version__)
+        my_lp.set_timestamp()
+        in_obj.add_linguistic_processor('text', my_lp)
+
     my_lp = KafNafParserPy.Clp()
     my_lp.set_name(this_name)
     my_lp.set_version(__version__)
@@ -144,6 +154,7 @@ def parse(input_file):
         sys.exit(-1)
 
     if in_obj.text_layer is None:
+        added_text_layer = True
         nlp = stanfordnlp.Pipeline(lang='nl',
                                    processors='tokenize,pos,lemma,depparse')
         text = in_obj.get_raw()
@@ -152,6 +163,7 @@ def parse(input_file):
         id_to_tokenid = create_text_layer(doc, in_obj)
     else:
         # Use existing tokenization
+        added_text_layer = False
         nlp = stanfordnlp.Pipeline(lang='nl',
                                    tokenize_pretokenized=True,
                                    processors='tokenize,pos,lemma,depparse')
@@ -174,5 +186,5 @@ def parse(input_file):
     term_id_mapping = create_term_layer(doc, in_obj, id_to_tokenid)
     create_dependency_layer(doc, in_obj, term_id_mapping)
 
-    in_obj = add_linguistic_processors(in_obj)
+    in_obj = add_linguistic_processors(in_obj, added_text_layer)
     return in_obj
