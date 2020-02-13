@@ -28,6 +28,11 @@ def _test_file1(this_file):
 
     # TODO: check dependencies in more detail
 
+    # Check linguistic processor layers
+    layers = list(my_obj.get_linguisticProcessors())
+    assert_equal(len(layers), 3)
+
+
 def _test_file2(this_file):
     my_obj = parse(open(this_file, 'rb'))
     # Check the terms
