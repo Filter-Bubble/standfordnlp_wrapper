@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=stanfordnlp_wrapper
+set SPHINXPROJ=stanza_wrapper
 
 if "%1" == "" goto help
 

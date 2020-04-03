@@ -12,7 +12,7 @@ from . import parse, __version__
 #     # python2: sys.stdin contains bytes (aka 'str)
 #     input_file = sys.stdin
 
-parser = argparse.ArgumentParser(description='Morphosyntactic parser based on Stanfordnlp')
+parser = argparse.ArgumentParser(description='Morphosyntactic parser based on stanza')
 parser.add_argument("--verbose", "-v", help="Verbose output", action="store_true")
 parser.add_argument('-V', '--version', action='version', version="{} ({})".format(__name__, __version__))
 parser.add_argument('--treebank', type=str, dest='treebank', help='Treebank to use')

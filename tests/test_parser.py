@@ -1,6 +1,6 @@
 import os
 
-from stanfordnlp_wrapper import parse
+from stanza_wrapper import parse
 
 __here__ = os.path.dirname(os.path.realpath(__file__))
 
@@ -46,5 +46,5 @@ def test_morphosyn_naf():
     naf_file = os.path.join(__here__, 'test_files', 'file1.in.naf')
     _test_file1(naf_file)
 
-def test_stanfordnlp():
+def test_stanza():
     naf_file = os.path.join(__here__, 'test_files', 'file3.in.naf')

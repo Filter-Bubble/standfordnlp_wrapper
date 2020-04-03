@@ -1,7 +1,7 @@
 import os
 import io
 
-from stanfordnlp_wrapper import parse
+from stanza_wrapper import parse
 
 __here__ = os.path.dirname(os.path.realpath(__file__))
 txt = b'''Dit is een tekst. Er zijn twee zinnen.'''

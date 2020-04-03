@@ -2,7 +2,7 @@
 from . import __version__
 import logging
 
-import stanfordnlp
+import stanza
 import KafNafParserPy
 from KafNafParserPy import KafNafParser
 from lxml.etree import XMLSyntaxError
@@ -13,8 +13,8 @@ from operator import itemgetter
 from xml.sax.saxutils import escape
 
 logger = logging.getLogger(__name__)
-this_name = 'Morphosyntactic parser based on StanfordNLP'
-default_treebank = 'nl_alpino'
+this_name = 'Morphosyntactic parser based on stanza'
+default_treebank = 'alpino'
 
 def get_naf(input_file):
 
@@ -57,7 +57,7 @@ def create_text_layer(st_doc, knaf_obj):
             token_obj.set_offset(str(offsets[wcount]))
 
             wcount += 1
-            id_to_tokenid[sid+1][token.index] = token_id
+            id_to_tokenid[sid+1][token.id] = token_id
             knaf_obj.add_wf(token_obj)
     return id_to_tokenid
 
@@ -75,13 +75,13 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
     for sid, sentence in enumerate(st_doc.sentences):
         for term in sentence.words:
             new_term_id = 't_'+str(tcount)
-            term_id_mapping[(sid, term.index)] = new_term_id
+            term_id_mapping[(sid, term.id)] = new_term_id
             term_obj = KafNafParserPy.Cterm(type=knaf_obj.get_type())
             term_obj.set_id(new_term_id)
 
             new_span = KafNafParserPy.Cspan()
             new_span.create_from_ids([id_to_tokenid[sid+1]
-                                      [term.parent_token.index]])
+                                      [term.parent.id]])
             term_obj.set_span(new_span)
 
             term_obj.set_lemma(term.lemma)
@@ -111,15 +111,14 @@ def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
                 str_comment = escape(str_comment, {"--":"&ndash"})
 
                 my_dep = KafNafParserPy.Cdependency()
-                my_dep.set_from(term_id_mapping.get((s_id, source.index)))
-                my_dep.set_to(term_id_mapping.get((s_id, target.index)))
+                my_dep.set_from(term_id_mapping.get((s_id, source.id)))
+                my_dep.set_to(term_id_mapping.get((s_id, target.id)))
                 my_dep.set_function(rel)
                 my_dep.set_comment(str_comment)
                 knaf_obj.add_dependency(my_dep)
 
 
 def add_linguistic_processors(in_obj, added_text_layer, treebank):
-    treebank = treebank if treebank is not None else default_treebank
     name = this_name + ' using {} treebank'.format(treebank)
 
     if added_text_layer:
@@ -145,6 +144,8 @@ def add_linguistic_processors(in_obj, added_text_layer, treebank):
 
 
 def parse(input_file, treebank=None):
+    treebank = treebank if treebank is not None else default_treebank
+
     if isinstance(input_file, KafNafParser):
         in_obj = input_file
     else:
@@ -158,9 +159,9 @@ def parse(input_file, treebank=None):
 
     if in_obj.text_layer is None:
         added_text_layer = True
-        nlp = stanfordnlp.Pipeline(lang='nl',
+        nlp = stanza.Pipeline(lang='nl',
                                    processors='tokenize,pos,lemma,depparse',
-                                   treebank=treebank)
+                                   package=treebank)
         text = in_obj.get_raw()
         in_obj.remove_text_layer()
         doc = nlp(text)
@@ -168,10 +169,10 @@ def parse(input_file, treebank=None):
     else:
         # Use existing tokenization
         added_text_layer = False
-        nlp = stanfordnlp.Pipeline(lang='nl',
+        nlp = stanza.Pipeline(lang='nl',
                                    tokenize_pretokenized=True,
                                    processors='tokenize,pos,lemma,depparse',
-                                   treebank=treebank)
+                                   package=treebank)
         sent_tokens_ixa = [(token.get_sent(), token.get_text())
                            for token in in_obj.get_tokens()]
         text = [[t for s2, t in toks]
@@ -185,7 +186,7 @@ def parse(input_file, treebank=None):
         # Check that we don't get mutli-word get_tokens
         if any([len(sent.tokens) != len(sent.words)
                 for sent in doc.sentences]):
-            raise Exception('StanfordNLP returns MutliWordTokens. '
+            raise Exception('stanza returns MutliWordTokens. '
                             'This is not allowed for Dutch.')
 
     term_id_mapping = create_term_layer(doc, in_obj, id_to_tokenid)
