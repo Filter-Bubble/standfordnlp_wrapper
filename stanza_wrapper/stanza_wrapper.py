@@ -57,7 +57,7 @@ def create_text_layer(st_doc, knaf_obj):
             token_obj.set_offset(str(offsets[wcount]))
 
             wcount += 1
-            id_to_tokenid[sid+1][token.id] = token_id
+            id_to_tokenid[sid+1][token.id[0]] = token_id
             knaf_obj.add_wf(token_obj)
     return id_to_tokenid
 
@@ -81,7 +81,7 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
 
             new_span = KafNafParserPy.Cspan()
             new_span.create_from_ids([id_to_tokenid[sid+1]
-                                      [term.parent.id]])
+                                      [term.parent.id[0]]])
             term_obj.set_span(new_span)
 
             term_obj.set_lemma(term.lemma)
@@ -179,7 +179,7 @@ def parse(input_file, treebank=None):
                 for s, toks in groupby(sent_tokens_ixa, itemgetter(0))]
         # TODO: is this correct??? can we make it more elegant?
         id_to_tokenid = {int(k):
-                         {str(i+1): t.get_id() for i, t in enumerate(g)}
+                         {i+1: t.get_id() for i, t in enumerate(g)}
                          for k, g in
                          groupby(in_obj.get_tokens(), lambda t: t.get_sent())}
         doc = nlp(text)
