@@ -1,21 +1,21 @@
 .. image:: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper.svg?branch=master
     :target: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper
 ################################################################################
-StanfordNLP wrapper for NAF files
+stanza wrapper for NAF files
 ################################################################################
 
-This is a wrapper around `StanfordNLP <https://stanfordnlp.github.io/stanfordnlp/index.html>`_ that produces `NAF files <http://wordpress.let.vupr.nl/naf/>`_ with morphosyntactic information. It is designed to use as a component in the `NewsReader pipeline <https://vu-rm-pip3.readthedocs.io/en/latest/home.html>`__. Ït currently only works for Dutch.
+This is a wrapper around `stanza <https://stanza.github.io/stanza/index.html>`_ that produces `NAF files <http://wordpress.let.vupr.nl/naf/>`_ with morphosyntactic information. It is designed to use as a component in the `NewsReader pipeline <https://vu-rm-pip3.readthedocs.io/en/latest/home.html>`__. Ït currently only works for Dutch.
 
 
 Installation
 ------------
 
-To install stanfordnlp_wrapper, do:
+To install stanza_wrapper, do:
 
 .. code-block:: console
 
-  git clone https://github.com/Filter-Bubble/stanfordnlp_wrapper.git
-  cd stanfordnlp_wrapper
+  git clone https://github.com/Filter-Bubble/stanza_wrapper.git
+  cd stanza_wrapper
   pip install .
 
 
@@ -31,7 +31,7 @@ Run tests (including coverage) with:
 Contributing
 ************
 
-If you want to contribute to the development of StanfordNLP wrapper for NAF files,
+If you want to contribute to the development of stanza wrapper for NAF files,
 have a look at the `contribution guidelines <CONTRIBUTING.rst>`_.
 
 License
