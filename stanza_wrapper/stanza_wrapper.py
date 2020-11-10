@@ -3,8 +3,7 @@ from . import __version__
 import logging
 
 import stanza
-import KafNafParserPy
-from KafNafParserPy import KafNafParser
+from KafNafParserPy import *
 from lxml.etree import XMLSyntaxError
 from io import BytesIO
 import sys
@@ -14,7 +13,7 @@ from xml.sax.saxutils import escape
 
 logger = logging.getLogger(__name__)
 this_name = 'Morphosyntactic parser based on stanza'
-default_treebank = 'alpino'
+default_treebank = 'combined'
 
 def get_naf(input_file):
 
@@ -44,7 +43,7 @@ def create_text_layer(st_doc, knaf_obj):
     for sid, sentence in enumerate(st_doc.sentences):
         id_to_tokenid[sid+1] = {}
         for token in sentence.tokens:
-            token_obj = KafNafParserPy.Cwf(type=knaf_obj.get_type())
+            token_obj = Cwf(type=knaf_obj.get_type())
             token_id = 'w{}'.format(wcount)
             token_length = len(token.text)
             offsets[wcount] = txt.find(token.text, offsets.get(wcount-1, 0))
@@ -76,25 +75,37 @@ def create_term_layer(st_doc, knaf_obj, id_to_tokenid):
         for term in sentence.words:
             new_term_id = 't_'+str(tcount)
             term_id_mapping[(sid, term.id)] = new_term_id
-            term_obj = KafNafParserPy.Cterm(type=knaf_obj.get_type())
+            term_obj = Cterm(type=knaf_obj.get_type())
             term_obj.set_id(new_term_id)
 
-            new_span = KafNafParserPy.Cspan()
+            new_span = Cspan()
             new_span.create_from_ids([id_to_tokenid[sid+1]
                                       [term.parent.id[0]]])
             term_obj.set_span(new_span)
 
+            # lemma: copy from stanza
             term_obj.set_lemma(term.lemma)
 
-            pos = term.upos.lower()
-            term_obj.set_pos(pos)
+            # pos: take the UD UPOS value
+            term_obj.set_pos(term.upos.lower())
 
-            feats = term.pos.split('|')  # term.feats)
-            feats = feats[0]+'(' + ','.join(feats[1:]) + ')'
-            term_obj.set_morphofeat(feats)
+            # external reference: the UD FEATS value
+            if term.feats:
+                ext_ref = CexternalReference()
+                ext_ref.set_resource('Stanza')
+                ext_ref.set_reftype('FEATS')
+                ext_ref.set_reference(term.feats)
+                term_obj.add_external_reference(ext_ref)
 
-            termtype = get_term_type(pos)
+            # morphofeat: reformatted UD XPOS value
+            if term.xpos:
+                feats = term.xpos.split('|')
+                feat = feats[0] + '(' + ','.join(feats[1:]) + ')'
+                term_obj.set_morphofeat(feat)
+
+            termtype = get_term_type(term.upos.lower())
             term_obj.set_type(termtype)
+
             knaf_obj.add_term(term_obj)
 
             tcount += 1
@@ -110,7 +121,7 @@ def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
                 str_comment = ' '+rel+'('+str(target.lemma)+','+str(source.lemma)+') '
                 str_comment = escape(str_comment, {"--":"&ndash"})
 
-                my_dep = KafNafParserPy.Cdependency()
+                my_dep = Cdependency()
                 my_dep.set_from(term_id_mapping.get((s_id, source.id)))
                 my_dep.set_to(term_id_mapping.get((s_id, target.id)))
                 my_dep.set_function(rel)
@@ -122,19 +133,19 @@ def add_linguistic_processors(in_obj, added_text_layer, treebank):
     name = this_name + ' using {} treebank'.format(treebank)
 
     if added_text_layer:
-        my_lp = KafNafParserPy.Clp()
+        my_lp = Clp()
         my_lp.set_name(name)
         my_lp.set_version(__version__)
         my_lp.set_timestamp()
         in_obj.add_linguistic_processor('text', my_lp)
 
-    my_lp = KafNafParserPy.Clp()
+    my_lp = Clp()
     my_lp.set_name(name)
     my_lp.set_version(__version__)
     my_lp.set_timestamp()
     in_obj.add_linguistic_processor('terms', my_lp)
 
-    my_lp = KafNafParserPy.Clp()
+    my_lp = Clp()
     my_lp.set_name(name)
     my_lp.set_version(__version__)
     my_lp.set_timestamp()
@@ -160,8 +171,8 @@ def parse(input_file, treebank=None):
     if in_obj.text_layer is None:
         added_text_layer = True
         nlp = stanza.Pipeline(lang='nl',
-                                   processors='tokenize,pos,lemma,depparse',
-                                   package=treebank)
+                              processors='tokenize,pos,lemma,depparse',
+                              package=treebank)
         text = in_obj.get_raw()
         in_obj.remove_text_layer()
         doc = nlp(text)

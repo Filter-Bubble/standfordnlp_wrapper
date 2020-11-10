@@ -26,6 +26,40 @@ Run tests (including coverage) with:
   python setup.py test
 
 
+Schema Mappings
+***************
+
+We use a stanza trained on `Universal Dependencies <https://universaldependencies.org/>`_ in a Conll format,
+but the NAF pipeline uses different schemas, probably derived from `Alpino <https://www.let.rug.nl/vannoord/alp/Alpino/>`_ .
+
++-------------+------------+--------+-------+
+|NAF layer    | property   | UD     | Notes |
++=============+============+========+=======+
+|text         |            |        | Straight forward, see code for details |
++-------------+------------+--------+--+
+|term         | lemma      | lemma  |  |
++-------------+------------+--------+--+
+|term         | pos        | upos   | NAF is lower cased, UD is upper cased |
++-------------+------------+--------+--+
+|term         | ext_ref    | feats  | NAF external reference has resource=Stanza, reftype=FEATS |
++-------------+------------+--------+--+
+|term         | morphofeat | xpos   | NAF has POS(a,b,..), UD uses POS\|a\|b\|... |
++-------------+------------+--------+--+
+|term         | term_type  |        | Derived form UPOS |
++-------------+------------+--------+--+
+|dependencies | from       | head   |  |
++-------------+------------+--------+--+
+|dependencies | to         |        |  |
++-------------+------------+--------+--+
+|dependencies | function   | deprel |  |
++-------------+------------+--------+--+
+
+TODO
+****
+
+ * What schema to use for the morphofeat. Does the current version work? NAF has english (UD-UPOS?) tags, whereas our Stanza uses Alpino POS tags.
+
+
 
 
 Contributing
