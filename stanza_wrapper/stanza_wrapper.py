@@ -13,7 +13,8 @@ from xml.sax.saxutils import escape
 
 logger = logging.getLogger(__name__)
 this_name = 'Morphosyntactic parser based on stanza'
-default_treebank = 'combined'
+default_treebank = 'alpino'
+
 
 def get_naf(input_file):
 
@@ -119,7 +120,7 @@ def create_dependency_layer(st_doc, knaf_obj, term_id_mapping):
             if rel != 'root':
                 # Creating comment
                 str_comment = ' '+rel+'('+str(target.lemma)+','+str(source.lemma)+') '
-                str_comment = escape(str_comment, {"--":"&ndash"})
+                str_comment = escape(str_comment, {"--": "&ndash"})
 
                 my_dep = Cdependency()
                 my_dep.set_from(term_id_mapping.get((s_id, source.id)))
