@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper.svg?branch=master
-    :target: https://travis-ci.com/Filter-Bubble/standfordnlp_wrapper
+.. image:: https://travis-ci.com/Filter-Bubble/stanza_wrapper.svg?branch=master
+    :target: https://travis-ci.com/Filter-Bubble/stanza_wrapper
 ################################################################################
 stanza wrapper for NAF files
 ################################################################################
